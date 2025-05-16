@@ -1,0 +1,3 @@
+FROM quay.io/pypa/manylinux2014_x86_64:2022-01-11-fb1b862
+
+COPY --from=ghcr.io/astral-sh/uv:0.5.20 /uv /uvx /bin/

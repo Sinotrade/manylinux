@@ -1,0 +1,4 @@
+FROM quay.io/pypa/musllinux_1_1_x86_64:2024-10-26-2f07c30
+
+COPY --from=ghcr.io/astral-sh/uv:0.5.20 /uv /uvx /bin/
+
