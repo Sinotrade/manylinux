@@ -1,3 +1,3 @@
-FROM quay.io/pypa/manylinux_2_28_x86_64:2025-05-10-96ea22a
+FROM quay.io/pypa/manylinux_2_28_x86_64:2025.10.24-1
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
