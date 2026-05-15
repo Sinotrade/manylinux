@@ -1,0 +1,19 @@
+FROM sinotrade/manylinux_2_28_x86_64:latest
+
+# rsolace-sys bindgen needs libclang
+RUN dnf install -y clang llvm-devel && dnf clean all
+
+# rust toolchain system-wide
+ENV CARGO_HOME=/opt/cargo \
+    RUSTUP_HOME=/opt/rustup \
+    PATH=/opt/cargo/bin:$PATH
+# pre-download rustup-init binary with retry, then drive it directly
+# (avoids the unreliable double-curl chain inside rustup-init.sh)
+RUN curl --proto '=https' --tlsv1.2 -sSfL --retry 8 --retry-delay 10 --connect-timeout 30 \
+        -o /tmp/rustup-init \
+        https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init && \
+    chmod +x /tmp/rustup-init && \
+    /tmp/rustup-init -y --default-toolchain stable --profile minimal -c rustfmt -c clippy && \
+    rm /tmp/rustup-init && \
+    chmod -R a+rX /opt/cargo /opt/rustup && \
+    cargo --version && rustc --version && cargo clippy --version && rustfmt --version

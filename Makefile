@@ -16,3 +16,6 @@ build-musllinux_1_2_x86_64:
 
 build-manylinux_2_28_aarch64:
 	docker build -f Dockerfile.manylinux_2_28_aarch64 -t sinotrade/manylinux_2_28_aarch64:latest .
+
+build-manylinux-rust:
+	docker build -f Dockerfile.manylinux_2_28_x86_64_rust -t sinotrade/manylinux_2_28_x86_64:rust .
