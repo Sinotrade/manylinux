@@ -19,3 +19,6 @@ build-manylinux_2_28_aarch64:
 
 build-manylinux-rust:
 	docker build -f Dockerfile.manylinux_2_28_x86_64_rust -t sinotrade/manylinux_2_28_x86_64:rust .
+
+build-manylinux-rust-aarch64:
+	docker build --platform linux/arm64 -f Dockerfile.manylinux_2_28_aarch64_rust -t sinotrade/manylinux_2_28_aarch64:rust .

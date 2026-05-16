@@ -1,0 +1,26 @@
+FROM quay.io/pypa/manylinux_2_28_aarch64:2025.06.08-1
+
+# Corporate FortiGate root CA — needed at runtime on hosts behind
+# FortiGate SSL inspection (crates.io / dnf / curl).
+COPY fortigate-ca.pem /etc/pki/ca-trust/source/anchors/fortigate-ca.pem
+RUN update-ca-trust && \
+    cat /etc/pki/ca-trust/source/anchors/fortigate-ca.pem >> /opt/_internal/certs.pem
+
+# uv binary (matches x86_64 base layout)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# rsolace-sys bindgen needs libclang
+RUN dnf install -y clang llvm-devel && dnf clean all
+
+# rust toolchain system-wide
+ENV CARGO_HOME=/opt/cargo \
+    RUSTUP_HOME=/opt/rustup \
+    PATH=/opt/cargo/bin:$PATH
+RUN curl --proto '=https' --tlsv1.2 -sSfL --retry 8 --retry-delay 10 --connect-timeout 30 \
+        -o /tmp/rustup-init \
+        https://static.rust-lang.org/rustup/dist/aarch64-unknown-linux-gnu/rustup-init && \
+    chmod +x /tmp/rustup-init && \
+    /tmp/rustup-init -y --default-toolchain stable --profile minimal -c rustfmt -c clippy && \
+    rm /tmp/rustup-init && \
+    chmod -R a+rX /opt/cargo /opt/rustup && \
+    cargo --version && rustc --version && cargo clippy --version && rustfmt --version
